@@ -14,6 +14,7 @@ typedef struct {
 void print_menu() {
 	cout << "1 - enter text" << endl
 	<< "2 - send text" << endl
+	<< "3 - clear buffer" << endl
 	<< "0 - exit" << endl;
 }
 

@@ -41,7 +41,9 @@ int main() {
 				send_message(mysocket, &CtoB);
 
 				BtoC = receive_message(mysocket, &msg);
-				cout << "Recieved string: " << recvd << endl;
+				// cout << "Recieved string: " << recvd << endl;
+				if(!recvd.empty()) cout << "Recieved string: " << recvd << endl;
+				else cout << "Empty line" << endl;
 
 				if(BtoC->status == 2){
 					zmq_msg_close(&msg);

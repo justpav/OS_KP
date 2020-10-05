@@ -40,6 +40,7 @@ int main() {
 		cin >> comand;
 		switch (comand) {
 			case 1:
+				// text.clear();
 				printf("Enter text, type END to finish:\n");
 				cin.ignore(1);
 				do{
@@ -51,33 +52,38 @@ int main() {
 				} while (s != "END");
 				break;
 			case 2:
-				for (const auto& item : text) {
-					AtoC.task = 1;
-					send_message(mysocket, &AtoC);
-					CtoA = receive_message(mysocket, &msg);
-					zmq_msg_close(&msg);
-					s = item;
-					send_text(mysocket, &s);
-
-					AtoB.sym = item.length();
-					AtoB.task = 1;
-					send_message(psocket, &AtoB);
-
-					BtoA = receive_message(psocket, &msg);
-					if (BtoA->status == 2) {
-						zmq_msg_close(&msg);
+				if(!text.empty()){
+					for (const auto& item : text) {
+						AtoC.task = 1;
+						send_message(mysocket, &AtoC);
 						CtoA = receive_message(mysocket, &msg);
-						if (CtoA->status != 2) {
+						zmq_msg_close(&msg);
+						s = item;
+						send_text(mysocket, &s);
+
+						AtoB.sym = item.length();
+						AtoB.task = 1;
+						send_message(psocket, &AtoB);
+
+						BtoA = receive_message(psocket, &msg);
+						if (BtoA->status == 2) {
 							zmq_msg_close(&msg);
-							cout << "Error while sending string" << endl;
+							CtoA = receive_message(mysocket, &msg);
+							if (CtoA->status != 2) {
+								zmq_msg_close(&msg);
+								cout << "Error while sending string" << endl;
+								return -1;
+							}
+						} else {
+							cout << "Error: missing message from B" << endl;
 							return -1;
 						}
-					} else {
-						cout << "Error: missing message from B" << endl;
-						return -1;
 					}
-				}
+				} else cout << "---No text to send---" << endl;
+				break;
+			case 3:
 				text.clear();
+				cout << "---Buffer cleared---" << endl;
 				break;
 			case 0:
 				AtoC.task = 2;
